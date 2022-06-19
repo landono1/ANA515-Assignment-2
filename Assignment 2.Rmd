@@ -1,0 +1,119 @@
+---
+title: "ANA 515 Assignment 2"
+author: "Larissa"
+date: '2022-06-19'
+output:
+  word_document: default
+  html_document: default
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+library(knitr)
+```
+
+## Description of The Data
+
+The dataset is a combination data from the Centers for Disease Control and Prevention’s Behavioral Risk Factor Surveillance System (BRFSS) and the data from Kaiser Family foundation. BRFSS includes a collection of health-related surveys of more than 400,000 Americans conducted each year, while Kaiser Family foundation provides the data on the number of hospitals and intensive care unit beds in each US county.This dataset can help identify the number of people who are at high risk of becoming seriously ill from COVID-19 per ICU bed or per hospital available in each metropolitan area, micropolitan area, or metropolitan division listed in the dataset, so they can help the area to prepare in facing COVID-19. They may take necessary actions such as adding some ICU facilities or doctors in the area.
+
+The file is saved as csv file, and it is comma delimited.
+
+## Reading the data into R
+
+I used the read_csv function from readr package to read in the data
+
+
+``` {r }
+library (readr)
+url<- "https://raw.githubusercontent.com/fivethirtyeight/data/master/covid-geography/mmsa-icu-beds.csv" 
+covid<-read_csv(url)
+
+```
+
+## Clean the data
+
+Separating the area name and state name into separate column.
+
+```{r }
+library (tidyr)
+library(dplyr)
+library(tidyverse)
+covid_clean <- covid %>%
+separate(MMSA,sep=",",into = c("Area","State")) 
+
+
+  
+```
+
+## Characteristics of the data 
+
+This dataframe has `r nrow(covid_clean)` rows and `r ncol(covid_clean)` columns. The names of the columns and a brief description of each are in the table below:
+
+
+```{r}
+Column <- colnames(covid_clean)
+Description <- c("The name of the metropolitan area, micropolitan area or metropolitan division available in the CDC’s BRFSS","State Name","The percent of individuals in that area that are at high risk of becoming seriously ill from COVID-19, per CDC’s BRFSS","The number of high risk individuals per ICU bed in that area","The number of high risk individuals per hospital in that area","The number of ICU beds in the area, based on the Kaiser Family Foundation’s data","The number of hospitals in the area, based on the Kaiser Family Foundation’s data","The total number of high risk individuals in the area, per CDC’s BRFSS")
+Covid_table <-data.frame(Column,Description)
+Covid_table
+knitr::kable(Covid_table,"pipe",col.name= c("Column name","Description") , align =c("l","l"))
+
+
+```
+
+
+## Summary statistics
+
+```{r}
+Covid_subset <- covid_clean %>%
+  select(icu_beds,hospitals,total_at_risk) 
+
+Summary <- summary(Covid_subset)
+Summary
+icu_mean <-mean(Covid_subset$icu_beds,na.rm=TRUE)
+icu_min <-min(Covid_subset$icu_beds,na.rm=TRUE)
+icu_max <-max(Covid_subset$icu_beds,na.rm=TRUE)
+icu_missing <- sum(is.na(Covid_subset$icu_beds))
+hospital_mean <-mean(Covid_subset$hospitals,na.rm=TRUE)
+hospital_min <-min(Covid_subset$hospitals,na.rm=TRUE)
+hospital_max <-max(Covid_subset$hospitals,na.rm=TRUE)
+hospital_missing <- sum(is.na(Covid_subset$hospitals))
+at_risk_mean <-mean(Covid_subset$total_at_risk,na.rm=TRUE)
+at_risk_min <-min(Covid_subset$total_at_risk,na.rm=TRUE)
+at_risk_max <-max(Covid_subset$total_at_risk,na.rm=TRUE)
+at_risk_missing <- sum(is.na(Covid_subset$total_at_risk))
+```
+
+The summary statistic of the icu_beds, hospitals and total_at_risk are as follow:
+
+Icu_beds
+
+Min : `r icu_min`,
+Max : `r icu_max`,
+Mean : `r icu_mean`,
+Missing value : `r icu_missing`
+
+hospitals
+
+Min : `r hospital_min`,
+Max : `r hospital_max`,
+Mean : `r hospital_mean`,
+Missing value : `r hospital_missing`
+
+total_at_risk
+
+Min : `r at_risk_min`,
+Max : `r at_risk_max`,
+Mean : `r at_risk_mean`,
+Missing value : `r at_risk_missing`
+
+
+
+
+
+
+
+
+
+
+
+
